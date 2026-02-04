@@ -4,140 +4,446 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>長屋に来てくれ！ - Rise of the Ronin 好物検索</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* デザイントークン */
+            --bg: #f8f8f8;
+            --bg1: #ffffff;
+            --bg2: #f4f4f5;
+            --bg3: #ebebec;
+            --bg4: #e0e0e2;
+            --bg-hover: rgba(0,0,0,0.03);
+            --bg-press: rgba(0,0,0,0.06);
+            --border: rgba(0,0,0,0.08);
+            --border-hover: rgba(0,0,0,0.16);
+            --color: #1a1a1a;
+            --color2: #333333;
+            --color3: #666666;
+            --color4: #999999;
+            --accent: #6e56cf;
+            --accent2: #5746a8;
+            --accent-bg: rgba(110,86,207,0.09);
+            --accent-bg-hover: rgba(110,86,207,0.15);
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-full: 999px;
+
+            /* 派閥 */
+            --f-tobaku: #cd2b31;
+            --f-tobaku-bg: rgba(205,43,49,0.08);
+            --f-sabaku: #3358c4;
+            --f-sabaku-bg: rgba(51,88,196,0.08);
+            --f-kaigai: #278c5a;
+            --f-kaigai-bg: rgba(39,140,90,0.08);
+            --f-sonota: #6e56cf;
+            --f-sonota-bg: rgba(110,86,207,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
+            font-family: "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--color2);
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .container {
-            max-width: 800px;
+
+        /* === ヘッダー === */
+        header {
+            max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 40px max(16px, env(safe-area-inset-left)) 24px;
+            text-align: center;
         }
-        h1, h2, h3 {
-            color: #333;
+        .hero-title {
+            font-size: 1.75em;
+            font-weight: 700;
+            color: var(--color);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
-        .form-check-label {
-            margin-left: 5px;
+        .hero-sub {
+            font-size: 0.8125em;
+            font-weight: 500;
+            color: var(--color4);
+            margin-top: 6px;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
+        .hero-link {
+            color: var(--accent2);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dashed var(--accent);
+            transition: border-color 0.15s;
         }
-        ul li {
-            background: #e3f2fd;
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
+        .hero-link:hover {
+            border-bottom-style: solid;
         }
-        ul li.multiple-likes {
-            background: #ffcccb;
+        .hero-notice {
+            margin-top: 16px;
+            padding: 10px 14px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.6875em;
+            color: var(--color4);
+            line-height: 1.6;
+            text-align: left;
         }
-        .nav-tabs {
-            border-bottom: 2px solid #ddd;
+
+        /* === メイン === */
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 12px max(16px, env(safe-area-inset-left)) 100px;
+        }
+
+        /* === セグメントコントロール（タブ） === */
+        .segment-group {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg1);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
             overflow-x: auto;
-            flex-wrap: nowrap;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        .nav-tabs .nav-item {
-            margin-bottom: -1px;
-        }
-        .nav-tabs .nav-link {
-            background: transparent;
+        .segment-group::-webkit-scrollbar { display: none; }
+
+        .segment-btn {
+            flex: 1;
+            min-width: 0;
+            height: 36px;
+            padding: 0 12px;
             border: none;
-            color: #333;
-            padding: 10px 15px;
-            font-size: 16px;
-            transition: color 0.3s;
-        }
-        .nav-tabs .nav-link.active {
+            border-radius: calc(var(--radius-md) - 4px);
             background: transparent;
-            border-bottom: 2px solid #007bff;
-            color: #007bff;
-            font-weight: bold;
+            color: var(--color3);
+            font-family: inherit;
+            font-size: 0.8125em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25,0.1,0.25,1);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-        .nav-tabs .nav-link:hover {
-            color: #0056b3;
+        .segment-btn:hover {
+            color: var(--color2);
+            background: var(--bg-hover);
         }
-        .tab-content {
-            border: 1px solid #ddd;
-            border-top: none;
-            padding: 20px;
+        .segment-btn:active {
+            transform: scale(0.97);
+            background: var(--bg-press);
         }
-        .container h2 {
-            margin-top: 40px;
+        .segment-btn.active {
+            background: var(--bg3);
+            color: var(--color);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
-        .checkbox-container {
+        .seg-count {
+            font-size: 0.85em;
+            opacity: 0.5;
+        }
+
+        /* === カードパネル === */
+        .panel-wrap { margin-top: 12px; }
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .card {
+            background: var(--bg1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color4);
+            margin-bottom: 12px;
+        }
+
+        /* === チップ（キャラ選択） === */
+        .chip-wrap {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
-        .btn-clear {
-            margin: 10px 0;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
+        .chip { position: relative; }
+        .chip input {
+            position: absolute;
+            opacity: 0;
+            width: 0; height: 0;
+        }
+        .chip-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 38px;
+            padding: 0 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            color: var(--color3);
+            font-size: 0.8125em;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            transition: all 0.15s cubic-bezier(0.25,0.1,0.25,1);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-clear:hover {
-            background-color: #0056b3;
+        .chip-label:hover {
+            border-color: var(--border-hover);
+            color: var(--color2);
+            background: var(--bg3);
         }
-        footer {
-            font-size: 12px;
-            color: #777;
+        .chip-label:active {
+            transform: scale(0.96);
+        }
+        .chip input:checked + .chip-label {
+            background: var(--accent-bg);
+            border-color: var(--accent);
+            color: var(--accent2);
+            font-weight: 600;
+        }
+        .chip input:checked + .chip-label::before {
+            content: '✓';
+            font-size: 0.8em;
+            margin-right: 2px;
+        }
+
+        /* === アクション行 === */
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .btn-outline {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg1);
+            color: var(--color3);
+            font-family: inherit;
+            font-size: 0.8125em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-outline:hover {
+            border-color: var(--border-hover);
+            color: var(--color2);
+            background: var(--bg2);
+        }
+        .btn-outline:active {
+            transform: scale(0.97);
+            background: var(--bg3);
+        }
+        .counter {
+            font-size: 0.8125em;
+            color: var(--color4);
+        }
+        .counter b {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        /* === 好物セクション === */
+        .section-label {
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color4);
+            margin: 24px 0 12px;
+        }
+
+        .fav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fav-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: var(--bg1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(8px);
+            animation: fadeIn 0.3s cubic-bezier(0.25,0.1,0.25,1) forwards;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .fav-card:hover {
+            background: var(--bg2);
+            border-color: var(--border-hover);
+        }
+        .fav-card:active {
+            transform: scale(0.99);
+        }
+
+        .fav-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        .fav-card.multiple .fav-icon {
+            background: var(--accent-bg);
+        }
+        .fav-card.single .fav-icon {
+            background: var(--bg3);
+        }
+
+        .fav-body { flex: 1; min-width: 0; }
+        .fav-name {
+            font-size: 0.875em;
+            font-weight: 600;
+            color: var(--color);
+            line-height: 1.3;
+        }
+        .fav-chars {
+            font-size: 0.75em;
+            color: var(--color4);
+            line-height: 1.5;
+            margin-top: 2px;
+        }
+
+        .fav-badge {
+            flex-shrink: 0;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.75em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fav-card.multiple .fav-badge {
+            background: var(--accent);
+            color: #fff;
+        }
+        .fav-card.single .fav-badge {
+            background: var(--bg3);
+            color: var(--color4);
+        }
+
+        .empty-msg {
             text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-top: 1px solid #ddd;
+            color: var(--color4);
+            padding: 40px 20px;
+            font-size: 0.875em;
+            line-height: 1.7;
+            background: var(--bg1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
         }
-        footer p {
-            margin: 5px 0;
+        .empty-icon {
+            font-size: 2em;
+            margin-bottom: 12px;
+            opacity: 0.4;
         }
-        @media (max-width: 767px) {
-            .nav-tabs .nav-link {
-                font-size: 14px;
-                padding: 8px 10px;
-            }
-            .container {
-                padding: 10px;
-            }
-            ul li {
-                padding: 8px;
-            }
-            .tab-content {
-                padding: 10px;
-            }
-            .checkbox-container {
-                flex-direction: column;
-            }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === フッター === */
+        footer {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px max(16px, env(safe-area-inset-left));
+            padding-bottom: max(32px, env(safe-area-inset-bottom));
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+        footer a {
+            color: var(--accent2);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        footer a:hover { text-decoration: underline; }
+        .footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .footer-links a { font-size: 0.8125em; }
+        .footer-dot { color: var(--color4); font-size: 0.75em; }
+
+        /* === スマホ最適化 === */
+        @supports (padding: max(0px)) {
+            header { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+            main { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>長屋に来てくれ！</h1>
-        <div class="row">
-            <div class="col-12">
-                <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
-                <div class="tab-content" id="myTabContent"></div>
-                <button class="btn-clear" onclick="clearSelection()">選択を解除</button>
-            </div>
+    <header>
+        <h1 class="hero-title">長屋に来てくれ！</h1>
+        <p class="hero-sub"><a href="https://teamninja-studio.com/ronin/jp/" target="_blank" class="hero-link">Rise of the Ronin</a> 好物検索ツール</p>
+        <div class="hero-notice">
+            このWebアプリはファンによる非公式の作成物です。ゲーム内で確認可能な情報をもとに複数のキャラクターの好物を見やすくリストアップし、狙ったキャラの長屋への来訪率アップの手助けを目的としています。情報の正確性については保証いたしかねます。
         </div>
-        <h2>選択されたキャラクターの好物</h2>
-        <ul id="favoritesList"></ul>
-    </div>
+    </header>
+
+    <main>
+        <div class="segment-group" id="segmentGroup"></div>
+        <div class="panel-wrap" id="panelWrap"></div>
+
+        <div class="actions">
+            <button class="btn-outline" onclick="clearSelection()">選択を解除</button>
+            <span class="counter" id="counter"></span>
+        </div>
+
+        <div class="section-label">好物リスト</div>
+        <ul class="fav-list" id="favList">
+            <li class="empty-msg">
+                <div class="empty-icon">🏯</div>
+                キャラクターを選択して<br>好物リストを表示しましょう
+            </li>
+        </ul>
+    </main>
+
     <footer>
-        <p>このWebアプリはファンによる非公式の作成物です。</p>
-        <p>ゲーム内で確認可能な情報をもとに複数のキャラクターの好物を見やすくリストアップし、狙ったキャラの長屋への来訪率アップの手助けを目的としています。</p>
-        <p>実際のゲーム内のシステム（例：好感度がキャラクターの来訪率に影響する場合など）は考慮されておらず、それに基づく情報の正確性については保証いたしかねますので、ご了承ください。</p>
-        <p><a href="https://mayholiholi.github.io" target="_blank">他のツール</a></p>
+        <div class="footer-links">
+            <a href="https://mayholiholi.github.io" target="_blank">他のツール</a>
+        </div>
     </footer>
 
     <script>
@@ -152,7 +458,22 @@
             "宝飾品": "💎", "囲碁": "♟"
         };
 
-        let characters = [];
+        const FACTIONS = {
+            "倒幕": { c: "var(--f-tobaku)", bg: "var(--f-tobaku-bg)" },
+            "佐幕": { c: "var(--f-sabaku)", bg: "var(--f-sabaku-bg)" },
+            "海外": { c: "var(--f-kaigai)", bg: "var(--f-kaigai-bg)" },
+            "その他": { c: "var(--f-sonota)", bg: "var(--f-sonota-bg)" },
+        };
+        const DEF_F = { c: "var(--f-sonota)", bg: "var(--f-sonota-bg)" };
+        function getF(f) { return FACTIONS[f] || DEF_F; }
+
+        function esc(t) {
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+
+        let chars = [];
 
         async function loadData() {
             try {
@@ -160,107 +481,118 @@
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
                 const lines = text.trim().split('\n');
-                const header = lines[0].replace(/^\uFEFF/, '');
-
                 for (let i = 1; i < lines.length; i++) {
-                    const match = lines[i].match(/^([^,]+),([^,]+),(.+)$/);
-                    if (!match) continue;
-                    characters.push({
-                        name: match[1].trim(),
-                        faction: match[2].trim(),
-                        gifts: match[3].replace(/^"|"$/g, '').trim()
-                    });
+                    const m = lines[i].match(/^([^,]+),([^,]+),(.+)$/);
+                    if (!m) continue;
+                    chars.push({ name: m[1].trim(), faction: m[2].trim(), gifts: m[3].replace(/^"|"$/g,'').trim() });
                 }
-
-                buildTabs();
-            } catch (error) {
-                console.error('データ読み込みエラー:', error);
-                const container = document.querySelector('.tab-content');
-                container.innerHTML = '<p style="padding:20px;color:#c00;">データの読み込みに失敗しました。ページを再読み込みしてください。</p>';
+                buildUI();
+            } catch (e) {
+                console.error('データ読み込みエラー:', e);
+                document.getElementById('panelWrap').innerHTML =
+                    '<div class="empty-msg"><div class="empty-icon">⚠️</div>データの読み込みに失敗しました。<br>ページを再読み込みしてください。</div>';
             }
         }
 
-        function buildTabs() {
-            const factions = [...new Set(characters.map(c => c.faction))];
-            const tabNav = document.getElementById('myTab');
-            const tabContent = document.getElementById('myTabContent');
+        function buildUI() {
+            const factions = [...new Set(chars.map(c => c.faction))];
+            const seg = document.getElementById('segmentGroup');
+            const pw = document.getElementById('panelWrap');
 
-            factions.forEach((faction, i) => {
-                const li = document.createElement('li');
-                li.className = 'nav-item';
-                li.setAttribute('role', 'presentation');
-                li.innerHTML = `<button class="nav-link ${i === 0 ? 'active' : ''}" id="tab-${i}" data-bs-toggle="tab" data-bs-target="#content-${i}" type="button" role="tab">${faction}</button>`;
-                tabNav.appendChild(li);
+            factions.forEach((f, i) => {
+                const st = getF(f);
+                const cnt = chars.filter(c => c.faction === f).length;
 
-                const pane = document.createElement('div');
-                pane.className = `tab-pane fade ${i === 0 ? 'show active' : ''}`;
-                pane.id = `content-${i}`;
-                pane.setAttribute('role', 'tabpanel');
+                const btn = document.createElement('button');
+                btn.className = `segment-btn${i===0?' active':''}`;
+                btn.dataset.panel = `p-${i}`;
+                btn.dataset.faction = f;
+                btn.innerHTML = `${esc(f)} <span class="seg-count">${cnt}</span>`;
+                if (i===0) { btn.style.borderColor = st.c; }
+                btn.addEventListener('click', () => switchPanel(btn));
+                seg.appendChild(btn);
 
-                const container = document.createElement('div');
-                container.className = 'checkbox-container';
+                const panel = document.createElement('div');
+                panel.className = `panel${i===0?' active':''}`;
+                panel.id = `p-${i}`;
+                panel.innerHTML = `<div class="card"><div class="card-title">${esc(f)} — ${cnt}人</div><div class="chip-wrap" id="cw-${i}"></div></div>`;
+                pw.appendChild(panel);
 
-                characters.filter(c => c.faction === faction).forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'form-check';
-                    div.innerHTML = `
-                        <input type="checkbox" class="form-check-input" id="${c.name}" name="characters" value="${c.name}" onchange="updateSelection()">
-                        <label class="form-check-label" for="${c.name}">${c.name}</label>
-                    `;
-                    container.appendChild(div);
+                const cw = document.getElementById(`cw-${i}`);
+                chars.filter(c => c.faction === f).forEach(c => {
+                    const chip = document.createElement('div');
+                    chip.className = 'chip';
+                    const s = esc(c.name);
+                    chip.innerHTML = `<input type="checkbox" id="c-${s}" name="characters" value="${s}" onchange="updateFav()"><label class="chip-label" for="c-${s}">${s}</label>`;
+                    cw.appendChild(chip);
                 });
-
-                pane.appendChild(container);
-                tabContent.appendChild(pane);
             });
         }
 
-        function updateSelection() {
-            const selected = Array.from(document.querySelectorAll('input[name="characters"]:checked')).map(cb => cb.value);
-            const favoritesList = document.getElementById('favoritesList');
-            favoritesList.innerHTML = '';
+        function switchPanel(btn) {
+            document.querySelectorAll('.segment-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.borderColor = '';
+            });
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const st = getF(btn.dataset.faction);
+            btn.style.borderColor = st.c;
+            document.getElementById(btn.dataset.panel).classList.add('active');
+        }
 
-            if (selected.length === 0) return;
+        function updateFav() {
+            const sel = Array.from(document.querySelectorAll('input[name="characters"]:checked')).map(cb => cb.value);
+            const list = document.getElementById('favList');
+            const ctr = document.getElementById('counter');
+            list.innerHTML = '';
 
-            const selectedData = characters.filter(c => selected.includes(c.name));
-            const favorites = {};
+            if (!sel.length) {
+                ctr.innerHTML = '';
+                list.innerHTML = '<li class="empty-msg"><div class="empty-icon">🏯</div>キャラクターを選択して<br>好物リストを表示しましょう</li>';
+                return;
+            }
+            ctr.innerHTML = `<b>${sel.length}</b>人を選択中`;
 
-            selectedData.forEach(c => {
-                const items = c.gifts.split(',').map(s => s.trim());
-                items.forEach(item => {
+            const sd = chars.filter(c => sel.includes(c.name));
+            const fav = {};
+            sd.forEach(c => {
+                c.gifts.split(',').map(s => s.trim()).forEach(item => {
+                    /* 貴重品は全キャラ共通のため除外 */
                     if (item.includes('貴重品')) return;
-                    if (!favorites[item]) favorites[item] = [];
-                    favorites[item].push(c.name);
+                    if (!fav[item]) fav[item] = [];
+                    fav[item].push(c.name);
                 });
             });
 
-            const sorted = Object.entries(favorites).sort((a, b) => b[1].length - a[1].length);
-
-            sorted.forEach(([item, chars]) => {
-                let display = item;
-                for (const [type, emoji] of Object.entries(GIFT_EMOJIS)) {
-                    if (item.includes(type)) {
-                        display = `${emoji} ${item}`;
-                        break;
-                    }
+            Object.entries(fav).sort((a,b) => b[1].length - a[1].length).forEach(([item, ppl], idx) => {
+                let emoji = '';
+                for (const [t,e] of Object.entries(GIFT_EMOJIS)) {
+                    if (item.includes(t)) { emoji = e; break; }
                 }
+                const mult = ppl.length > 1;
                 const li = document.createElement('li');
-                const strong = document.createElement('strong');
-                strong.textContent = display;
-                li.appendChild(strong);
-                li.appendChild(document.createTextNode(`: ${chars.join(', ')}が好き`));
-                if (chars.length > 1) li.classList.add('multiple-likes');
-                favoritesList.appendChild(li);
+                li.className = `fav-card ${mult?'multiple':'single'}`;
+                li.style.animationDelay = `${Math.min(idx*0.04,0.6)}s`;
+                li.innerHTML = `
+                    <div class="fav-icon">${emoji||'🎁'}</div>
+                    <div class="fav-body">
+                        <div class="fav-name">${esc(item)}</div>
+                        <div class="fav-chars">${ppl.map(esc).join('、')} — ${ppl.length}人が好き</div>
+                    </div>
+                    <div class="fav-badge">${ppl.length}</div>
+                `;
+                list.appendChild(li);
             });
         }
 
         function clearSelection() {
             document.querySelectorAll('input[name="characters"]:checked').forEach(cb => cb.checked = false);
-            document.getElementById('favoritesList').innerHTML = '';
+            document.getElementById('favList').innerHTML = '<li class="empty-msg"><div class="empty-icon">🏯</div>キャラクターを選択して<br>好物リストを表示しましょう</li>';
+            document.getElementById('counter').innerHTML = '';
         }
 
         loadData();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
