@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>長屋に来てくれ！ - Rise of the Ronin 好物検索</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .form-check-label {
+            margin-left: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            background: #e3f2fd;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        ul li.multiple-likes {
+            background: #ffcccb;
+        }
+        .nav-tabs {
+            border-bottom: 2px solid #ddd;
+        }
+        .nav-tabs .nav-item {
+            margin-bottom: -1px;
+        }
+        .nav-tabs .nav-link {
+            background: transparent;
+            border: none;
+            color: #333;
+            padding: 10px 15px;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        .nav-tabs .nav-link.active {
+            background: transparent;
+            border-bottom: 2px solid #007bff;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #0056b3;
+        }
+        .tab-content {
+            border: 1px solid #ddd;
+            border-top: none;
+            padding: 20px;
+        }
+        .container h2 {
+            margin-top: 40px;
+        }
+        .checkbox-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .btn-clear {
+            margin: 10px 0;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn-clear:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        @media (max-width: 767px) {
+            .nav-tabs .nav-link {
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+            .container {
+                padding: 10px;
+            }
+            ul li {
+                padding: 8px;
+            }
+            .tab-content {
+                padding: 10px;
+            }
+            .checkbox-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>長屋に来てくれ！</h1>
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
+                <div class="tab-content" id="myTabContent"></div>
+                <button class="btn-clear" onclick="clearSelection()">選択を解除</button>
+            </div>
+        </div>
+        <h2>選択されたキャラクターの好物</h2>
+        <ul id="favoritesList"></ul>
+    </div>
+    <footer>
+        <p>このWebアプリはファンによる非公式の作成物です。</p>
+        <p>ゲーム内で確認可能な情報をもとに複数のキャラクターの好物を見やすくリストアップし、狙ったキャラの長屋への来訪率アップの手助けを目的としています。</p>
+        <p>実際のゲーム内のシステム（例：好感度がキャラクターの来訪率に影響する場合など）は考慮されておらず、それに基づく情報の正確性については保証いたしかねますので、ご了承ください。</p>
+        <p><a href="https://mayholiholi.github.io" target="_blank">他のツール</a></p>
+    </footer>
+
+    <script>
+        const GIFT_EMOJIS = {
+            "軽やかな酒": "🍺", "洋菓子": "🍰", "洋装": "👗",
+            "和歌": "📜", "芳醇な酒": "🍶", "美術品": "🖼️",
+            "強烈な味の酒": "🥃", "骨董": "🏺", "儒教や漢詩": "📚",
+            "蘭学や英語": "📖", "海洋冒険": "🚢", "流行りものや化粧": "💄",
+            "鍛錬": "🏋️", "貴重品": "💎", "お香や植物": "🌿",
+            "猫や子供": "🐾", "史書": "📖", "煙草": "🚬",
+            "和菓子": "🍡", "写真や日本の風物": "📷", "科学": "🔬",
+            "宝飾品": "💎", "囲碁": "♟"
+        };
+
+        let characters = [];
+
+        async function loadData() {
+            const res = await fetch('csv/date.csv');
+            const text = await res.text();
+            const lines = text.trim().split('\n');
+            const header = lines[0].replace(/^\uFEFF/, '');
+
+            for (let i = 1; i < lines.length; i++) {
+                const match = lines[i].match(/^([^,]+),([^,]+),(.+)$/);
+                if (!match) continue;
+                characters.push({
+                    name: match[1].trim(),
+                    faction: match[2].trim(),
+                    gifts: match[3].replace(/^"|"$/g, '').trim()
+                });
+            }
+
+            buildTabs();
+        }
+
+        function buildTabs() {
+            const factions = [...new Set(characters.map(c => c.faction))];
+            const tabNav = document.getElementById('myTab');
+            const tabContent = document.getElementById('myTabContent');
+
+            factions.forEach((faction, i) => {
+                const li = document.createElement('li');
+                li.className = 'nav-item';
+                li.setAttribute('role', 'presentation');
+                li.innerHTML = `<button class="nav-link ${i === 0 ? 'active' : ''}" id="tab-${i}" data-bs-toggle="tab" data-bs-target="#content-${i}" type="button" role="tab">${faction}</button>`;
+                tabNav.appendChild(li);
+
+                const pane = document.createElement('div');
+                pane.className = `tab-pane fade ${i === 0 ? 'show active' : ''}`;
+                pane.id = `content-${i}`;
+                pane.setAttribute('role', 'tabpanel');
+
+                const container = document.createElement('div');
+                container.className = 'checkbox-container';
+
+                characters.filter(c => c.faction === faction).forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'form-check';
+                    div.innerHTML = `
+                        <input type="checkbox" class="form-check-input" id="${c.name}" name="characters" value="${c.name}" onchange="updateSelection()">
+                        <label class="form-check-label" for="${c.name}">${c.name}</label>
+                    `;
+                    container.appendChild(div);
+                });
+
+                pane.appendChild(container);
+                tabContent.appendChild(pane);
+            });
+        }
+
+        function updateSelection() {
+            const selected = Array.from(document.querySelectorAll('input[name="characters"]:checked')).map(cb => cb.value);
+            const favoritesList = document.getElementById('favoritesList');
+            favoritesList.innerHTML = '';
+
+            if (selected.length === 0) return;
+
+            const selectedData = characters.filter(c => selected.includes(c.name));
+            const favorites = {};
+
+            selectedData.forEach(c => {
+                const items = c.gifts.split(',').map(s => s.trim());
+                items.forEach(item => {
+                    if (item.includes('貴重品')) return;
+                    if (!favorites[item]) favorites[item] = [];
+                    favorites[item].push(c.name);
+                });
+            });
+
+            const sorted = Object.entries(favorites).sort((a, b) => b[1].length - a[1].length);
+
+            sorted.forEach(([item, chars]) => {
+                let display = item;
+                for (const [type, emoji] of Object.entries(GIFT_EMOJIS)) {
+                    if (item.includes(type)) {
+                        display = `${emoji} ${item}`;
+                        break;
+                    }
+                }
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${display}</strong>: ${chars.join(', ')}が好き`;
+                if (chars.length > 1) li.classList.add('multiple-likes');
+                favoritesList.appendChild(li);
+            });
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('input[name="characters"]:checked').forEach(cb => cb.checked = false);
+            document.getElementById('favoritesList').innerHTML = '';
+        }
+
+        loadData();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
