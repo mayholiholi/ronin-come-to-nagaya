@@ -1,6 +1,6 @@
 # 長屋に来てくれ！
 
-https://mayholiholi.github.io/ronin-nagaya-guide/
+https://mayholiholi.github.io/ronin-come-to-nagaya/
 
 [Rise of the Ronin](https://teamninja-studio.com/ronin/jp/) の好物検索ツール。
 
