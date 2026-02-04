@@ -1,18 +1,16 @@
 # 長屋に来てくれ！
 
+https://mayholiholi.github.io/come-to-my-nagaya-Ronin-Tool/
+
 [Rise of the Ronin](https://teamninja-studio.com/ronin/jp/) の好物検索ツール。
 
-複数のキャラクターを選択して、共通の好物を一覧表示できます。狙ったキャラの長屋への来訪率アップに活用してください。
+複数のキャラクターを選択して、共通の好物を一覧表示できる。狙ったキャラの長屋への来訪率アップに。
 
 ## 使い方
 
 1. 派閥タブ（倒幕・佐幕・海外・その他）を切り替える
 2. 呼びたいキャラクターをタップして選択
 3. 選択したキャラの好物が重複数順にリスト表示される
-
-## デモ
-
-https://mayholiholi.github.io/come-to-my-nagaya-Ronin-Tool/
 
 ## 注意
 
