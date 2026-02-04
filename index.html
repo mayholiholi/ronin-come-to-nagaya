@@ -39,6 +39,8 @@
         }
         .nav-tabs {
             border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+            flex-wrap: nowrap;
         }
         .nav-tabs .nav-item {
             margin-bottom: -1px;
@@ -153,22 +155,29 @@
         let characters = [];
 
         async function loadData() {
-            const res = await fetch('csv/date.csv');
-            const text = await res.text();
-            const lines = text.trim().split('\n');
-            const header = lines[0].replace(/^\uFEFF/, '');
+            try {
+                const res = await fetch('csv/date.csv');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const text = await res.text();
+                const lines = text.trim().split('\n');
+                const header = lines[0].replace(/^\uFEFF/, '');
 
-            for (let i = 1; i < lines.length; i++) {
-                const match = lines[i].match(/^([^,]+),([^,]+),(.+)$/);
-                if (!match) continue;
-                characters.push({
-                    name: match[1].trim(),
-                    faction: match[2].trim(),
-                    gifts: match[3].replace(/^"|"$/g, '').trim()
-                });
+                for (let i = 1; i < lines.length; i++) {
+                    const match = lines[i].match(/^([^,]+),([^,]+),(.+)$/);
+                    if (!match) continue;
+                    characters.push({
+                        name: match[1].trim(),
+                        faction: match[2].trim(),
+                        gifts: match[3].replace(/^"|"$/g, '').trim()
+                    });
+                }
+
+                buildTabs();
+            } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                const container = document.querySelector('.tab-content');
+                container.innerHTML = '<p style="padding:20px;color:#c00;">データの読み込みに失敗しました。ページを再読み込みしてください。</p>';
             }
-
-            buildTabs();
         }
 
         function buildTabs() {
@@ -236,7 +245,10 @@
                     }
                 }
                 const li = document.createElement('li');
-                li.innerHTML = `<strong>${display}</strong>: ${chars.join(', ')}が好き`;
+                const strong = document.createElement('strong');
+                strong.textContent = display;
+                li.appendChild(strong);
+                li.appendChild(document.createTextNode(`: ${chars.join(', ')}が好き`));
                 if (chars.length > 1) li.classList.add('multiple-likes');
                 favoritesList.appendChild(li);
             });
